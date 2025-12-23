@@ -1,0 +1,32 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    volumes:
+      - ./:/usr/src/app
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    environment:
+      - DATABASE_HOSTNAME=postgres   # <--- THIS IS THE KEY FIX
+      - DATABASE_PORT=5432
+      - DATABASE_PASSWORD=Aa20011120
+      - DATABASE_NAME=fastapi
+      - DATABASE_USERNAME=postgres
+      - WATCHFILES_FORCE_POLLING=true
+
+  postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Aa20011120
+      - POSTGRES_DB=fastapi
+
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+
+volumes:
+  postgres-db:
